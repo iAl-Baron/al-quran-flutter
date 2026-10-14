@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'audio_service.dart';
 import 'about_page.dart';
 import 'tasbih_page.dart';
 import 'prayer_qibla_page.dart';
 import 'calendar_page.dart';
+import 'quran_reader_page.dart';
 
 class TextsPage extends StatefulWidget {
   final double fontSize;
@@ -21,7 +23,6 @@ class _TextsPageState extends State<TextsPage> {
   String _selectedCategory = 'الكل';
 
   final List<Map<String, String>> allTexts = [
-    // 50 Duas sample
     {'title': 'دعاء كميل بن زياد', 'category': 'أدعية'},
     {'title': 'دعاء التوسل', 'category': 'أدعية'},
     {'title': 'دعاء الندبة', 'category': 'أدعية'},
@@ -42,7 +43,6 @@ class _TextsPageState extends State<TextsPage> {
     {'title': 'دعاء عرفة للإمام الحسين', 'category': 'أدعية'},
     {'title': 'دعاء الفرج', 'category': 'أدعية'},
     {'title': 'دعاء السيفي الصغير', 'category': 'أدعية'},
-    // 50 Ziyarats sample
     {'title': 'زيارة عاشوراء', 'category': 'زيارات'},
     {'title': 'زيارة أمين الله', 'category': 'زيارات'},
     {'title': 'زيارة وارث', 'category': 'زيارات'},
@@ -68,43 +68,66 @@ class _TextsPageState extends State<TextsPage> {
   final List<String> bookmarks = [];
   final AudioPlayerService _audioService = AudioPlayerService();
 
+  @override
+  void initState() {
+    super.initState();
+    _restoreBookmarks();
+  }
+
+  Future<void> _restoreBookmarks() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getStringList('dua_ziyara_bookmarks_v1') ?? <String>[];
+    if (!mounted) return;
+    setState(() {
+      bookmarks
+        ..clear()
+        ..addAll(saved);
+    });
+  }
+
+  Future<void> _toggleTextBookmark(String title) async {
+    setState(() {
+      bookmarks.contains(title) ? bookmarks.remove(title) : bookmarks.add(title);
+    });
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('dua_ziyara_bookmarks_v1', bookmarks);
+  }
+
   void _showReciterDialog(String title) {
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('اختر القارئ أو المنشد'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: const Text('الشيخ ميثم التمار'),
-                onTap: () {
-                  _audioService.selectedReciter = 'الشيخ ميثم التمار';
-                  Navigator.pop(context);
-                  _playAudio(title);
-                },
-              ),
-              ListTile(
-                title: const Text('الحاج باسم الكربلائي'),
-                onTap: () {
-                  _audioService.selectedReciter = 'الحاج باسم الكربلائي';
-                  Navigator.pop(context);
-                  _playAudio(title);
-                },
-              ),
-              ListTile(
-                title: const Text('الشيخ أباذر الحلواجي'),
-                onTap: () {
-                  _audioService.selectedReciter = 'الشيخ أباذر الحلواجي';
-                  Navigator.pop(context);
-                  _playAudio(title);
-                },
-              ),
-            ],
-          ),
-        );
-      },
+      builder: (context) => AlertDialog(
+        title: const Text('اختر القارئ أو المنشد'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('الشيخ ميثم التمار'),
+              onTap: () {
+                _audioService.selectedReciter = 'الشيخ ميثم التمار';
+                Navigator.pop(context);
+                _playAudio(title);
+              },
+            ),
+            ListTile(
+              title: const Text('الحاج باسم الكربلائي'),
+              onTap: () {
+                _audioService.selectedReciter = 'الحاج باسم الكربلائي';
+                Navigator.pop(context);
+                _playAudio(title);
+              },
+            ),
+            ListTile(
+              title: const Text('الشيخ أباذر الحلواجي'),
+              onTap: () {
+                _audioService.selectedReciter = 'الشيخ أباذر الحلواجي';
+                Navigator.pop(context);
+                _playAudio(title);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -128,14 +151,23 @@ class _TextsPageState extends State<TextsPage> {
         title: const Text('القرآن والأدعية الشامل'),
         actions: [
           IconButton(
+            tooltip: 'فتح المصحف',
+            icon: const Icon(Icons.menu_book),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const QuranReaderPage()),
+            ),
+          ),
+          IconButton(
             icon: Icon(widget.isDarkMode ? Icons.wb_sunny : Icons.nightlight_round),
             onPressed: () => widget.toggleTheme(!widget.isDarkMode),
           ),
           IconButton(
             icon: const Icon(Icons.info_outline),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutPage()));
-            },
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AboutPage()),
+            ),
           ),
         ],
       ),
@@ -146,6 +178,14 @@ class _TextsPageState extends State<TextsPage> {
             const DrawerHeader(
               decoration: BoxDecoration(color: Colors.teal),
               child: Text('قائمة الخدمات الشاملة', style: TextStyle(color: Colors.white, fontSize: 22)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.menu_book),
+              title: const Text('المصحف الشريف'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const QuranReaderPage()));
+              },
             ),
             ListTile(
               leading: const Icon(Icons.access_time),
@@ -184,11 +224,7 @@ class _TextsPageState extends State<TextsPage> {
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-              },
+              onChanged: (value) => setState(() => _searchQuery = value),
             ),
           ),
           SingleChildScrollView(
@@ -200,11 +236,7 @@ class _TextsPageState extends State<TextsPage> {
                   child: FilterChip(
                     label: Text(category),
                     selected: _selectedCategory == category,
-                    onSelected: (selected) {
-                      setState(() {
-                        _selectedCategory = category;
-                      });
-                    },
+                    onSelected: (_) => setState(() => _selectedCategory = category),
                   ),
                 );
               }).toList(),
@@ -221,10 +253,7 @@ class _TextsPageState extends State<TextsPage> {
                 return Card(
                   margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: ListTile(
-                    title: Text(
-                      title,
-                      style: TextStyle(fontSize: widget.fontSize, fontWeight: FontWeight.bold),
-                    ),
+                    title: Text(title, style: TextStyle(fontSize: widget.fontSize, fontWeight: FontWeight.bold)),
                     subtitle: Text(category),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -235,20 +264,34 @@ class _TextsPageState extends State<TextsPage> {
                         ),
                         IconButton(
                           icon: Icon(isBookmarked ? Icons.bookmark : Icons.bookmark_border, color: Colors.amber),
-                          onPressed: () {
-                            setState(() {
-                              if (isBookmarked) {
-                                bookmarks.remove(title);
-                              } else {
-                                bookmarks.add(title);
-                              }
-                            });
-                          },
+                          onPressed: () => _toggleTextBookmark(title),
                         ),
                         PopupMenuButton<String>(
                           onSelected: (value) {
                             if (value == 'copy') {
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تم نسخ: $title')));
+                            } else if (value == 'share') {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('مشاركة: $title')));
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(value: 'copy', child: Text('نسخ النص')),
+                            const PopupMenuItem(value: 'share', child: Text('مشاركة')),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+                           ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text('تم نسخ: $title')),
                               );
                             } else if (value == 'share') {
