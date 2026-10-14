@@ -22,7 +22,7 @@ class PrayerQiblaPage extends StatelessWidget {
                     ListTile(title: Text('الفجر'), trailing: Text('04:30 ص')),
                     ListTile(title: Text('الشروق'), trailing: Text('06:00 ص')),
                     ListTile(title: Text('الظهر'), trailing: Text('12:15 م')),
-                    ListTile(title: Text('العصر'),, trailing: Text('03:45 م')),
+                    ListTile(title: Text('العصر'), trailing: Text('03:45 م')),
                     ListTile(title: Text('المغرب'), trailing: Text('06:30 م')),
                     ListTile(title: Text('العشاء'), trailing: Text('07:50 م')),
                   ],
