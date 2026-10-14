@@ -5,22 +5,27 @@ import 'texts_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
-  final bool isDarkMode = prefs.getBool('isDarkMode') ?? false;
-  final double fontSize = prefs.getDouble('fontSize') ?? 18.0;
-
-  runApp(QuranApp(initialDarkMode: isDarkMode, initialFontSize: fontSize));
+  runApp(QuranApp(
+    initialDarkMode: prefs.getBool('isDarkMode') ?? false,
+    initialFontSize: prefs.getDouble('fontSize') ?? 18.0,
+  ));
 }
 
 class QuranApp extends StatefulWidget {
   final bool initialDarkMode;
   final double initialFontSize;
 
-  const QuranApp({Key? key, required this.initialDarkMode, required this.initialFontSize}) : super(key: key);
+  const QuranApp({
+    Key? key,
+    required this.initialDarkMode,
+    required this.initialFontSize,
+  }) : super(key: key);
 
   @override
   State<QuranApp> createState() => _QuranAppState();
 
-  static _QuranAppState? of(BuildContext context) => context.findAncestorStateOfType<_QuranAppState>();
+  static _QuranAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_QuranAppState>();
 }
 
 class _QuranAppState extends State<QuranApp> {
@@ -34,18 +39,14 @@ class _QuranAppState extends State<QuranApp> {
     _fontSize = widget.initialFontSize;
   }
 
-  void toggleTheme(bool value) async {
-    setState(() {
-      _isDarkMode = value;
-    });
+  Future<void> toggleTheme(bool value) async {
+    setState(() => _isDarkMode = value);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isDarkMode', value);
   }
 
-  void updateFontSize(double size) async {
-    setState(() {
-      _fontSize = size;
-    });
+  Future<void> updateFontSize(double size) async {
+    setState(() => _fontSize = size);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('fontSize', size);
   }
@@ -53,22 +54,22 @@ class _QuranAppState extends State<QuranApp> {
   double get fontSize => _fontSize;
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'تطبيق القرآن والأدعية والزيارات الشامل',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primarySwatch: Colors.teal,
-        fontFamily: 'Amiri',
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.teal,
-        fontFamily: 'Amiri',
-      ),
-      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: TextsPage(fontSize: _fontSize, toggleTheme: toggleTheme, isDarkMode: _isDarkMode),
-    );
-  }
+  Widget build(BuildContext context) => MaterialApp(
+        title: 'تطبيق القرآن والأدعية والزيارات الشامل',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          brightness: Brightness.light,
+          colorSchemeSeed: Colors.teal,
+        ),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          colorSchemeSeed: Colors.teal,
+        ),
+        themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+        home: TextsPage(
+          fontSize: _fontSize,
+          toggleTheme: toggleTheme,
+          isDarkMode: _isDarkMode,
+        ),
+      );
 }
