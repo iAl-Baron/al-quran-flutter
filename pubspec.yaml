@@ -1,22 +1,30 @@
-name: al_quran
-description: تطبيق القرآن الكريم - أساس Flutter عربي قابل للتطوير.
-publish_to: "none"
-version: 0.1.0+1
+name: al_quran_flutter
+description: A comprehensive Quran, Duas and Ziyarat Flutter application with advanced features.
+publish_to: 'none'
+version: 1.3.0+4
 
 environment:
-  sdk: ">=3.3.0 <4.0.0"
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.2.2
-  shared_preferences: ^2.3.2
-  audioplayers: ^6.1.0
+  shared_preferences: ^2.2.2
+  just_audio: ^0.9.36
+  audio_service: ^0.18.12
+  flutter_vector_icons: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^2.0.0
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/texts/
+    - assets/data/
+  fonts:
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
