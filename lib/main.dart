@@ -48,7 +48,7 @@ class _QuranAppState extends State<QuranApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: forest, brightness: Brightness.light),
         scaffoldBackgroundColor: paper,
         appBarTheme: const AppBarTheme(backgroundColor: paper, foregroundColor: forest, centerTitle: true),
-        cardTheme: CardThemeData(color: Colors.white, elevation: 0, margin: EdgeInsets.zero),
+        cardTheme: const CardThemeData(color: Colors.white, elevation: 0, margin: EdgeInsets.zero),
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
