@@ -1,5 +1,7 @@
-include: package:flutter_lints/flutter.yaml
 analyzer:
+  strong-mode:
+    implicit-casts: true
+    implicit-dynamic: true
   errors:
-    prefer_const_constructors: ignore
-    prefer_const_literals_to_create_immutables: ignore
+    ignore
+
