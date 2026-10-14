@@ -1,7 +1,7 @@
 name: al_quran_flutter
 description: A comprehensive Quran, Duas and Ziyarat Flutter application with advanced features.
 publish_to: 'none'
-version: 1.3.0+4
+version: 1.4.0+5
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -13,6 +13,9 @@ dependencies:
   just_audio: ^0.9.36
   audio_service: ^0.18.12
   flutter_vector_icons: ^2.0.0
+  http: ^1.2.2
+  path_provider: ^2.1.4
+  flutter_compass: ^0.8.1
 
 dev_dependencies:
   flutter_test:
@@ -24,7 +27,3 @@ flutter:
   assets:
     - assets/texts/
     - assets/data/
-  fonts:
-    - family: Amiri
-      fonts:
-        - asset: assets/fonts/Amiri-Regular.ttf
